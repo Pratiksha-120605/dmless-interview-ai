@@ -1,87 +1,44 @@
 import { useState } from "react";
-import { auth } from "../firebase";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
-function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLogin, setIsLogin] = useState(true);
+export default function Login() {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
-    try {
-      if (isLogin) {
-        await signInWithEmailAndPassword(auth, email, password);
-      } else {
-        await createUserWithEmailAndPassword(auth, email, password);
-      }
+
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+
+    if (storedUser && storedUser.email === email) {
+      toast.success("Login successful!");
       navigate("/dashboard");
-    } catch (error) {
-      alert(error.message);
+    } else {
+      toast.error("User not found. Please signup first.");
+      navigate("/signup");
     }
   };
 
   return (
-    <div className="min-h-screen flex bg-slate-950 text-white">
-      {/* Left Branding Section */}
-      <div className="hidden md:flex w-1/2 bg-gradient-to-br from-indigo-600 to-slate-800 items-center justify-center">
-        <div className="text-center px-10">
-          <h1 className="text-5xl font-bold mb-4">Dmless</h1>
-          <p className="text-lg text-gray-200">
-            Smart Hiring Links with Knockout Screening.
-          </p>
-        </div>
-      </div>
+    <div className="flex justify-center items-center h-screen bg-black text-white">
+      <form
+        onSubmit={handleLogin}
+        className="bg-zinc-900 p-8 rounded-xl w-96 border border-cyan-500"
+      >
+        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
 
-      {/* Right Login Section */}
-      <div className="flex w-full md:w-1/2 items-center justify-center px-6">
-        <form
-          onSubmit={handleSubmit}
-          className="w-full max-w-md bg-slate-900 p-10 rounded-2xl shadow-xl space-y-6"
-        >
-          <h2 className="text-3xl font-semibold text-center">
-            {isLogin ? "Welcome Back" : "Create Account"}
-          </h2>
+        <input
+          type="email"
+          placeholder="Enter your email"
+          className="w-full p-2 mb-6 bg-black border border-gray-700 rounded focus:border-cyan-400 outline-none"
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full p-3 rounded-lg bg-slate-800 focus:outline-none"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full p-3 rounded-lg bg-slate-800 focus:outline-none"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-
-          <button className="w-full bg-indigo-600 py-3 rounded-lg hover:bg-indigo-700 transition">
-            {isLogin ? "Login" : "Sign Up"}
-          </button>
-
-          <p
-            className="text-sm text-center text-gray-400 cursor-pointer"
-            onClick={() => setIsLogin(!isLogin)}
-          >
-            {isLogin
-              ? "Don't have an account? Sign Up"
-              : "Already have an account? Login"}
-          </p>
-        </form>
-      </div>
+        <button className="w-full bg-cyan-500 hover:bg-cyan-600 py-2 rounded font-semibold transition">
+          Login
+        </button>
+      </form>
     </div>
   );
 }
-
-export default Login;

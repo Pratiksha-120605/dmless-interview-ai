@@ -1,17 +1,26 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import ProtectedRoute from "./components/ProtectedRoute";
-import Dashboard from "./pages/Dashboard";
-
+import { Routes, Route } from "react-router-dom";
+import Landing from "./pages/Landing";
+import Signup from "./pages/Signup";
 import Login from "./pages/Login";
-import { auth } from "./firebase";
-import { db, storage } from "./firebase";
-import Apply from "./pages/Apply";
+import Dashboard from "./pages/Dashboard";
+import StartInterview from "./pages/StartInterview";
+import Interview from "./pages/Interview";
+import Analytics from "./pages/Analytics";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { Toaster } from "react-hot-toast";
 
-function App() {
+export default function App() {
   return (
-    <BrowserRouter>
+    <>
+      <Toaster position="top-right" />
+
       <Routes>
-        <Route path="/" element={<Login />} />
+        {/* Public Routes */}
+        <Route path="/" element={<Landing />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+
+        {/* Protected Routes */}
         <Route
           path="/dashboard"
           element={
@@ -20,10 +29,34 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/apply/:linkId" element={<Apply />} />
+
+        <Route
+          path="/start"
+          element={
+            <ProtectedRoute>
+              <StartInterview />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/interview"
+          element={
+            <ProtectedRoute>
+              <Interview />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/analytics"
+          element={
+            <ProtectedRoute>
+              <Analytics />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
-    </BrowserRouter>
+    </>
   );
 }
-
-export default App;
